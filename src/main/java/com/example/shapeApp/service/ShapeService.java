@@ -21,39 +21,37 @@ public class ShapeService {
 
     public Shape addShape(ShapeType type, JSONObject parameters) {
         final var id = UUID.randomUUID();
-        Shape shape = null;
-        switch (type) {
-            case CIRCLE -> {
-                final var radius = parameters.getDouble("radius");
-                final var circleArea = Math.PI * radius * radius;
-                final var circlePerimeter = 2 * Math.PI * radius;
-                shape = new Shape(id, ShapeType.CIRCLE, parameters, getPerimeter(id), getArea(id));
-                shape.setPerimeter(circlePerimeter);
-                shape.setArea(circleArea);
-                return shapeRepository.save(shape);
-            }
-            case RECTANGLE -> {
-                final var width = parameters.getDouble("width");
-                final var height = parameters.getDouble("height");
-                final var rectangleArea = width * height;
-                final var rectanglePerimeter = 2 * (width + height);
-                shape = new Shape(id, ShapeType.RECTANGLE, parameters, getPerimeter(id), getArea(id));
-                shape.setArea(rectangleArea);
-                shape.setPerimeter(rectanglePerimeter);
-                return shapeRepository.save(shape);
-            }
-        }
+        return switch (type) {
+            case CIRCLE -> createCircle(parameters, id);
+            case RECTANGLE -> createRectangle(parameters, id);
+        };
+    }
+
+    public double getShapePerimeter(UUID id) {
+        final var getShape = shapeRepository.getReferenceById(id);
+        return getShape.getPerimeter();
+    }
+
+    public double getShapeArea(UUID id) {
+        final var getShape = shapeRepository.getReferenceById(id);
+        return getShape.getArea();
+    }
+
+
+    private Shape createRectangle(JSONObject parameters, UUID id) {
+        final var width = parameters.getDouble("width");
+        final var height = parameters.getDouble("height");
+        final var rectangleArea = width * height;
+        final var rectanglePerimeter = 2 * (width + height);
+        final var shape = new Shape(id, ShapeType.RECTANGLE, parameters, rectanglePerimeter, rectangleArea);
         return shapeRepository.save(shape);
     }
 
-    public double getPerimeter(UUID id) {
-        final var getShape = shapeRepository.findById(id);
-        return getShape.get().getPerimeter();
+    private Shape createCircle(JSONObject parameters, UUID id) {
+        final var radius = parameters.getDouble("radius");
+        final var circleArea = Math.PI * radius * radius;
+        final var circlePerimeter = 2 * Math.PI * radius;
+        final var shape = new Shape(id, ShapeType.CIRCLE, parameters, circlePerimeter, circleArea);
+        return shapeRepository.save(shape);
     }
-
-    public double getArea(UUID id) {
-        final var getShape = shapeRepository.findById(id);
-        return getShape.get().getArea();
-    }
-
 }

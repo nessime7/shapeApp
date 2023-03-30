@@ -38,14 +38,14 @@ public class ShapeController {
 
     @GetMapping("/shapes/{id}/perimeter")
     public ResponseEntity<JSONObject> getPerimeter(@PathVariable UUID id) {
-        final var perimeter = shapeService.getPerimeter(id);
+        final var perimeter = shapeService.getShapePerimeter(id);
         JSONObject response = new JSONObject().put("perimeter", perimeter);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/shapes/{id}/area")
     public ResponseEntity<JSONObject> getArea(@PathVariable UUID id) {
-        final var area = shapeService.getArea(id);
+        final var area = shapeService.getShapeArea(id);
         JSONObject response = new JSONObject().put("area", area);
         return ResponseEntity.ok(response);
     }
