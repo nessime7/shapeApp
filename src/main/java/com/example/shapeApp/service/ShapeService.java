@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-import static java.util.UUID.randomUUID;
-
 @Service
 public class ShapeService {
 
@@ -22,52 +20,40 @@ public class ShapeService {
     }
 
     public Shape addShape(ShapeType type, JSONObject parameters) {
-        // add logic to calculate area and perimeter for every new shape and add it to repo
-        return shapeRepository.save(new Shape(randomUUID(), type, parameters));
+        final var id = UUID.randomUUID();
+        Shape shape = null;
+        switch (type) {
+            case CIRCLE -> {
+                final var radius = parameters.getDouble("radius");
+                final var circleArea = Math.PI * radius * radius;
+                final var circlePerimeter = 2 * Math.PI * radius;
+                shape = new Shape(id, ShapeType.CIRCLE, parameters, getPerimeter(id), getArea(id));
+                shape.setPerimeter(circlePerimeter);
+                shape.setArea(circleArea);
+                return shapeRepository.save(shape);
+            }
+            case RECTANGLE -> {
+                final var width = parameters.getDouble("width");
+                final var height = parameters.getDouble("height");
+                final var rectangleArea = width * height;
+                final var rectanglePerimeter = 2 * (width + height);
+                shape = new Shape(id, ShapeType.RECTANGLE, parameters, getPerimeter(id), getArea(id));
+                shape.setArea(rectangleArea);
+                shape.setPerimeter(rectanglePerimeter);
+                return shapeRepository.save(shape);
+            }
+        }
+        return shapeRepository.save(shape);
     }
 
     public double getPerimeter(UUID id) {
-        return null;
+        final var getShape = shapeRepository.findById(id);
+        return getShape.get().getPerimeter();
     }
 
     public double getArea(UUID id) {
-        return null;
+        final var getShape = shapeRepository.findById(id);
+        return getShape.get().getArea();
     }
+
 }
-
-//    public ShapeRequest createShape(ShapeRequest shapeRequest) throws InvalidShapeParametersException {
-//        ShapeType type = shapeRequest.getType();
-//        Map<String, Double> parameters = shapeRequest.getParameters();
-//        switch (type) {
-//            case CIRCLE:
-//                Double radius = parameters.get("radius");
-//                if (radius == null || radius <= 0) {
-//                    throw new InvalidShapeParametersException("Invalid radius: " + radius);
-//                }
-//                Double circleArea = Math.PI * radius * radius;
-//                Double circlePerimeter = 2 * Math.PI * radius;
-//                shapeRequest.setArea(circleArea);
-//                shapeRequest.setPerimeter(circlePerimeter);
-//                break;
-//            case RECTANGLE:
-//                Double width = parameters.get("width");
-//                Double height = parameters.get("height");
-//                if (width == null || width <= 0) {
-//                    throw new InvalidShapeParametersException("Invalid width: " + width);
-//                }
-//                if (height == null || height <= 0) {
-//                    throw new InvalidShapeParametersException("Invalid height: " + height);
-//                }
-//                Double rectangleArea = width * height;
-//                Double rectanglePerimeter = 2 * (width + height);
-//                shapeRequest.setArea(rectangleArea);
-//                shapeRequest.setPerimeter(rectanglePerimeter);
-//                break;
-//        }
-//        return shapeRequest;
-//    }
-//
-//    public List<Shape> getAllShapes() {
-//        return shapeRepository.findAll();
-//    }
-

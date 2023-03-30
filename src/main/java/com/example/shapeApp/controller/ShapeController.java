@@ -31,7 +31,6 @@ public class ShapeController {
             case CIRCLE -> circleResponse(shape);
             case RECTANGLE -> rectangleResponse(shape);
         };
-
 //        response.addLink("calculate-perimeter", "/api/v1/shapes/" + response.getId() + "/perimeter");
 //        response.addLink("calculate-area", "/api/v1/shapes/" + response.getId() + "/area");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -39,14 +38,16 @@ public class ShapeController {
 
     @GetMapping("/shapes/{id}/perimeter")
     public ResponseEntity<JSONObject> getPerimeter(@PathVariable UUID id) {
-        // add logic to handle perimeter, calculation should be done in service
-        return new JSONObject().put("perimeter", perimeter);
+        final var perimeter = shapeService.getPerimeter(id);
+        JSONObject response = new JSONObject().put("perimeter", perimeter);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/shapes/{id}/area")
-    public ResponseEntity<JSONObject> getPerimeter(@PathVariable UUID id) {
-        // add logic to handle area, calculation should be done in service
-        return new JSONObject().put("area", area);
+    public ResponseEntity<JSONObject> getArea(@PathVariable UUID id) {
+        final var area = shapeService.getArea(id);
+        JSONObject response = new JSONObject().put("area", area);
+        return ResponseEntity.ok(response);
     }
 
     private JSONObject circleResponse(Shape shape) {
@@ -59,22 +60,5 @@ public class ShapeController {
                 .put("height", shape.getParameters().getDouble("height"))
                 .put("width", shape.getParameters().getDouble("width"));
     }
-
-//    @GetMapping("/{id}/perimeter")
-//    public ResponseEntity<Double> calculatePerimeter(@PathVariable UUID id) {
-//        double perimeter = shapeService.calculatePerimeter(id);
-//        return ResponseEntity.ok(perimeter);
-//    }
-//
-//    @GetMapping("/{id}/area")
-//    public ResponseEntity<Double> calculateArea(@PathVariable UUID id) {
-//        double area = shapeService.calculateArea(id);
-//        return ResponseEntity.ok(area);
-//    }
-//
-//    @GetMapping("/shapes?type=")
-//    public List<ShapeResponse> getAllShapes() {
-//        return map(shapeService.getAllShapes());
-//    }
 
 }
