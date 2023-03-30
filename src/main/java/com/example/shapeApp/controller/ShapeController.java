@@ -31,8 +31,10 @@ public class ShapeController {
             case CIRCLE -> circleResponse(shape);
             case RECTANGLE -> rectangleResponse(shape);
         };
-//        response.addLink("calculate-perimeter", "/api/v1/shapes/" + response.getId() + "/perimeter");
-//        response.addLink("calculate-area", "/api/v1/shapes/" + response.getId() + "/area");
+        String perimeterUrl = "/api/v1/shapes/" + shape.getId() + "/perimeter";
+        String areaUrl = "/api/v1/shapes/" + shape.getId() + "/area";
+        addLink(response, "calculate-perimeter", perimeterUrl);
+        addLink(response, "calculate-area", areaUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -48,6 +50,16 @@ public class ShapeController {
         final var area = shapeService.getShapeArea(id);
         JSONObject response = new JSONObject().put("area", area);
         return ResponseEntity.ok(response);
+    }
+
+    public JSONObject addLink(JSONObject jsonObject, String name, String url) {
+        JSONObject links = jsonObject.optJSONObject("links");
+        if (links == null) {
+            links = new JSONObject();
+        }
+        links.put(name, url);
+        jsonObject.put("links", links);
+        return jsonObject;
     }
 
     private JSONObject circleResponse(Shape shape) {
