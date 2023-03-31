@@ -1,22 +1,15 @@
 package com.example.shapeApp.controller;
 
 import com.example.shapeApp.model.Shape;
-import com.example.shapeApp.model.ShapeType;
 import com.example.shapeApp.service.ShapeService;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-
-import static com.example.shapeApp.model.ShapeType.CIRCLE;
-import static com.example.shapeApp.model.ShapeType.RECTANGLE;
 
 @RestController
 @RequestMapping("/api/v1")

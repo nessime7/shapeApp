@@ -4,9 +4,7 @@ import com.example.shapeApp.controller.ShapeRequest;
 import com.example.shapeApp.model.Circle;
 import com.example.shapeApp.model.Rectangle;
 import com.example.shapeApp.model.Shape;
-import com.example.shapeApp.model.ShapeType;
 import com.example.shapeApp.repository.ShapeRepository;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

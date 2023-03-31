@@ -1,14 +1,10 @@
 package com.example.shapeApp.model;
 
-
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.json.JSONObject;
 
 import java.util.UUID;
-
 
 @Data
 @NoArgsConstructor
