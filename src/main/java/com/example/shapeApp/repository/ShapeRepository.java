@@ -1,28 +1,23 @@
 package com.example.shapeApp.repository;
 
+import com.example.shapeApp.model.Circle;
 import com.example.shapeApp.model.Shape;
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
-@Component
-public class ShapeRepository {
+@Repository
+public interface ShapeRepository extends JpaRepository<Shape, UUID> {
 
-    private final Map<UUID, Shape> shapes = new HashMap<>();
+    @Query("from Circle")
+    Page<Circle> findCircles(Pageable pageable);
 
-    public Shape getById(UUID id) {
-        final var shape = shapes.get(id);
-        if (shape == null) {
-            throw new IllegalStateException("Shape not found");
-        }
-        return shapes.get(id);
-    }
+    @Query("from Rectangle")
+    Page<Circle> findRectangles(Pageable pageable);
 
-    public Shape save(Shape shape) {
-        this.shapes.put(shape.id(), shape);
-        return shape;
-    }
 }
 

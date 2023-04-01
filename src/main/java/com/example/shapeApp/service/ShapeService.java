@@ -1,18 +1,14 @@
 package com.example.shapeApp.service;
 
-import com.example.shapeApp.model.ShapeParametersRequest;
-import com.example.shapeApp.model.Circle;
-import com.example.shapeApp.model.Rectangle;
-import com.example.shapeApp.model.Shape;
-import com.example.shapeApp.model.ShapeType;
+import com.example.shapeApp.model.*;
 import com.example.shapeApp.repository.ShapeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-import static com.example.shapeApp.model.ShapeType.CIRCLE;
-import static com.example.shapeApp.model.ShapeType.RECTANGLE;
 import static java.util.UUID.randomUUID;
 
 @Service
@@ -34,27 +30,38 @@ public class ShapeService {
     }
 
     public double getShapePerimeter(UUID id) {
-        final var getShape = shapeRepository.getById(id);
-        return getShape.perimeter();
+        final var getShape = shapeRepository.getReferenceById(id);
+        return getShape.getPerimeter();
     }
 
     public double getShapeArea(UUID id) {
-        final var getShape = shapeRepository.getById(id);
-        return getShape.area();
+        final var getShape = shapeRepository.getReferenceById(id);
+        return getShape.getArea();
     }
 
 
     private Shape createRectangle(double width, double height, UUID id) {
         final var rectangleArea = width * height;
         final var rectanglePerimeter = 2 * (width + height);
-        final var rectangle = new Rectangle(id, RECTANGLE, width, height, rectanglePerimeter, rectangleArea);
+        final var rectangle = new Rectangle(id, width, height, rectangleArea, rectanglePerimeter);
         return shapeRepository.save(rectangle);
     }
 
     private Shape createCircle(double radius, UUID id) {
         final var circleArea = Math.PI * radius * radius;
         final var circlePerimeter = 2 * Math.PI * radius;
-        final var circle = new Circle(id, CIRCLE, radius, circlePerimeter, circleArea);
+        final var circle = new Circle(id, radius, circleArea, circlePerimeter);
         return shapeRepository.save(circle);
+    }
+
+    public Page<Shape> getShapesByType(ShapeType type, Pageable pageable) {
+        return switch (type) {
+            case CIRCLE -> shapeRepository.findCircles(pageable).map(circle -> (Shape) circle);
+            case RECTANGLE -> shapeRepository.findRectangles(pageable).map(r -> (Shape) r);
+        };
+    }
+
+    public Page<Shape> getShapes(Pageable pageable) {
+        return shapeRepository.findAll(pageable);
     }
 }

@@ -1,43 +1,26 @@
 package com.example.shapeApp.model;
 
-import lombok.Builder;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+import static com.example.shapeApp.model.ShapeType.CIRCLE;
+
 @Data
 @NoArgsConstructor
-@Builder
-public class Circle implements Shape {
+@AllArgsConstructor
+@Entity
+@DiscriminatorValue("CIRCLE")
+public class Circle extends Shape {
 
-    private UUID id;
-    private ShapeType type;
     private double radius;
-    private double perimeter;
-    private double area;
 
-
-    public Circle(UUID id, ShapeType type, double radius, double perimeter, double area) {
-        this.id = id;
-        this.type = type;
+    public Circle(UUID id, double radius, double area, double perimeter) {
+        super(id, area, perimeter);
         this.radius = radius;
-        this.perimeter = perimeter;
-        this.area = area;
-    }
-
-    @Override
-    public UUID id() {
-        return id;
-    }
-
-    @Override
-    public double area() {
-        return area;
-    }
-
-    @Override
-    public double perimeter() {
-        return perimeter;
     }
 }

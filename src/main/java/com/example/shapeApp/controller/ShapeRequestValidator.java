@@ -10,11 +10,21 @@ public class ShapeRequestValidator {
 
 
     public void validate(ShapeRequest shapeRequest) {
-        ShapeType type = validateShapeType(shapeRequest);
+        ShapeType type = validateShapeType(shapeRequest.type());
         switch (type) {
             case CIRCLE -> validateCircleParams(shapeRequest);
             case RECTANGLE -> validateRectangleParams(shapeRequest);
         }
+    }
+
+    public ShapeType validateShapeType(String requestType) {
+        ShapeType type;
+        try {
+            type = ShapeType.valueOf(requestType);
+        } catch (IllegalArgumentException e) {
+            throw new UnknownShapeException();
+        }
+        return type;
     }
 
     private void validateRectangleParams(ShapeRequest shapeRequest) {
@@ -27,15 +37,5 @@ public class ShapeRequestValidator {
         if (shapeRequest.parameters().getRadius().isEmpty()) {
             throw new InvalidParametersException();
         }
-    }
-
-    private ShapeType validateShapeType(ShapeRequest shapeRequest) {
-        ShapeType type;
-        try {
-            type = ShapeType.valueOf(shapeRequest.type());
-        } catch (IllegalArgumentException e) {
-            throw new UnknownShapeException();
-        }
-        return type;
     }
 }

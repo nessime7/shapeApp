@@ -1,14 +1,22 @@
 package com.example.shapeApp.controller;
 
 import com.example.shapeApp.model.*;
+import com.example.shapeApp.model.Rectangle;
+import com.example.shapeApp.model.Shape;
 import com.example.shapeApp.service.ShapeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
+import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.Optional.empty;
 
 /*
 mamy endpoint do dodawania figur geometrycznych
@@ -55,15 +63,23 @@ public class ShapeController {
         this.requestValidator = validator;
     }
 
+    @GetMapping("/shapes")
+    public ResponseEntity<Page<Shape>> getShapes(@RequestParam Optional<String> type, Pageable pageable) {
+        final var shapes = type
+                .map(t -> getShapesByType(pageable, t))
+                .orElseGet(() -> shapeService.getShapes(pageable));
+        return ResponseEntity.ok(shapes);
+    }
+
     @PostMapping("/shapes")
-    public ResponseEntity<EntityModel<Shape>> addShape(@RequestBody ShapeRequest shapeRequest) {
+    public ResponseEntity<EntityModel<ShapeResponse>> addShape(@RequestBody ShapeRequest shapeRequest) {
         requestValidator.validate(shapeRequest);
         final var type = ShapeType.valueOf(shapeRequest.type());
         final var shape = shapeService.addShape(type, shapeRequest.parameters());
-        final var perimeterLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ShapeController.class).getArea(shape.id())).withRel("calculate-perimeter");
-        final var areaLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ShapeController.class).getPerimeter(shape.id())).withRel("calculate-area");
+        final var perimeterLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ShapeController.class).getPerimeter(shape.getId())).withRel("calculate-perimeter");
+        final var areaLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ShapeController.class).getArea(shape.getId())).withRel("calculate-area");
         return ResponseEntity.status(201)
-                .body(EntityModel.of(shape, perimeterLink, areaLink));
+                .body(EntityModel.of(map(shape), perimeterLink, areaLink));
     }
 
     @GetMapping("/shapes/{id}/perimeter")
@@ -76,5 +92,32 @@ public class ShapeController {
     public ResponseEntity<AreaResponse> getArea(@PathVariable UUID id) {
         final var area = shapeService.getShapeArea(id);
         return ResponseEntity.ok(new AreaResponse(area));
+    }
+
+    private Page<Shape> getShapesByType(Pageable pageable, String t) {
+        requestValidator.validateShapeType(t);
+        return shapeService.getShapesByType(ShapeType.valueOf(t), pageable);
+    }
+
+    public ShapeResponse map(Shape shape) {
+        if (shape instanceof Circle) {
+            return new ShapeResponse(shape.getId(),
+                    shape.getArea(),
+                    shape.getPerimeter(),
+                    ShapeType.CIRCLE.name(),
+                    empty(),
+                    empty(),
+                    Optional.of((((Circle) shape).getRadius())));
+        } else if (shape instanceof Rectangle) {
+            return new ShapeResponse(shape.getId(),
+                    shape.getArea(),
+                    shape.getPerimeter(),
+                    ShapeType.RECTANGLE.name(),
+                    Optional.of((((Rectangle) shape).getWidth())),
+                    Optional.of((((Rectangle) shape).getHeight())),
+                    empty()
+            );
+        }
+        throw new IllegalStateException("Processing error, program shouldn't reach this line");
     }
 }
