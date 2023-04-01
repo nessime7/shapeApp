@@ -55,6 +55,7 @@ zwraca page czegos co extends ShapeDto
 
 calosc pokryc testami jednostkowymi i integracyjnymi.
  */
+
 @RestController
 @RequestMapping("/api/v1")
 public class ShapeController {
