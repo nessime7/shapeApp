@@ -2,7 +2,7 @@ package com.example.shapes.controller;
 
 import com.example.shapes.exception.InvalidParametersException;
 import com.example.shapes.exception.UnknownShapeException;
-import com.example.shapes.model.*;
+import com.example.shapes.model.ShapeType;
 import com.example.shapes.model.dto.ShapeRequest;
 import org.springframework.stereotype.Component;
 

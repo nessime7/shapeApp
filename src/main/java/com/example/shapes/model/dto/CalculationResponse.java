@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.Link;
 
 import java.util.List;
-
 import java.util.UUID;
 
 @Data
