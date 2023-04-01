@@ -7,6 +7,7 @@ import com.example.shapeApp.model.Rectangle;
 import com.example.shapeApp.repository.ShapeRepository;
 import io.restassured.RestAssured;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,7 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(classes = {ShapeApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ShapeIntegrationTest {
@@ -42,20 +42,73 @@ public class ShapeIntegrationTest {
         shapeRepository.save(new Rectangle(UUID.fromString(RECTANGLE_ID), 10.0, 10.0, 100.0, 40.0));
     }
 
+    @AfterEach
+    void cleanUp() {
+        shapeRepository.deleteAll();
+    }
+
+    @Test
+    void should_get_circle_shapes_only() {
+        given().contentType(JSON)
+                .when().get("/api/v1/shapes?type=CIRCLE")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .and()
+                .body("content[0].id", equalTo(CIRCLE_ID))
+                .body("content[0].type", equalTo("CIRCLE"))
+                .body("content[0].radius", equalTo(10.0F))
+                .body("content[0].perimeter", equalTo(62.832F))
+                .body("content[0].area", equalTo(314.16F))
+                .body("content[0].links[0].rel", is("calculate-perimeter"))
+                .body("content[0].links[0].href", stringContainsInOrder("/api/v1/shapes", "/perimeter"))
+                .body("content[0].links[1].rel", is("calculate-area"))
+                .body("content[0].links[1].href", stringContainsInOrder("/api/v1/shapes", "/area"))
+                .body("content.size()", is(1));
+    }
 
     @Test
     void should_get_all_shapes() {
         given().contentType(JSON)
                 .when().get("/api/v1/shapes")
                 .then()
-                .statusCode(HttpStatus.SC_CREATED)
+                .statusCode(HttpStatus.SC_OK)
                 .and()
-                .body("type", equalTo("CIRCLE"))
-                .body("radius", equalTo(100.0F))
-                .body("perimeter", equalTo(628.3185307179587F))
-                .body("area", equalTo(31415.926535897932F))
-                .body("_links.calculate-area.href", stringContainsInOrder("/api/v1/shapes", "/area"))
-                .body("_links.calculate-perimeter.href", stringContainsInOrder("/api/v1/shapes", "/perimeter"));
+                .body("content[0].id", equalTo(CIRCLE_ID))
+                .body("content[0].type", equalTo("CIRCLE"))
+                .body("content[0].radius", equalTo(10.0F))
+                .body("content[0].perimeter", equalTo(62.832F))
+                .body("content[0].area", equalTo(314.16F))
+                .body("content[0].links[0].rel", is("calculate-perimeter"))
+                .body("content[0].links[0].href", stringContainsInOrder("/api/v1/shapes", "/perimeter"))
+                .body("content[0].links[1].rel", is("calculate-area"))
+                .body("content[0].links[1].href", stringContainsInOrder("/api/v1/shapes", "/area"))
+                .body("content[1].id", equalTo(RECTANGLE_ID))
+                .body("content[1].type", equalTo("RECTANGLE"))
+                .body("content[1].width", equalTo(10.0F))
+                .body("content[1].height", equalTo(10.0F))
+                .body("content[1].perimeter", equalTo(40.0F))
+                .body("content[1].area", equalTo(100.0F))
+                .body("content[1].links[0].rel", is("calculate-perimeter"))
+                .body("content[1].links[0].href", stringContainsInOrder("/api/v1/shapes", "/perimeter"))
+                .body("content[1].links[1].rel", is("calculate-area"))
+                .body("content[1].links[1].href", stringContainsInOrder("/api/v1/shapes", "/area"))
+                .body("content.size()", is(2));
+    }
+
+
+    @Test
+    void should_get_one_shape_when_pagination_used() {
+        // given
+        shapeRepository.save(new Circle(UUID.randomUUID(), 10.0, 314.16, 62.832));
+        shapeRepository.save(new Circle(UUID.randomUUID(), 10.0, 314.16, 62.832));
+
+        // when
+        given().contentType(JSON)
+                .when().get("/api/v1/shapes?page=3&size=1")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .and()
+                .body("content.size()", is(1));
     }
 
     @Test
@@ -70,8 +123,10 @@ public class ShapeIntegrationTest {
                 .body("radius", equalTo(100.0F))
                 .body("perimeter", equalTo(628.3185307179587F))
                 .body("area", equalTo(31415.926535897932F))
-                .body("_links.calculate-area.href", stringContainsInOrder("/api/v1/shapes", "/area"))
-                .body("_links.calculate-perimeter.href", stringContainsInOrder("/api/v1/shapes", "/perimeter"));
+                .body("links[0].rel", is("calculate-perimeter"))
+                .body("links[0].href", stringContainsInOrder("/api/v1/shapes", "/perimeter"))
+                .body("links[1].rel", is("calculate-area"))
+                .body("links[1].href", stringContainsInOrder("/api/v1/shapes", "/area"));
     }
 
     @Test
@@ -87,8 +142,10 @@ public class ShapeIntegrationTest {
                 .body("height", equalTo(100.0F))
                 .body("perimeter", equalTo(400.0F))
                 .body("area", equalTo(10000.0F))
-                .body("_links.calculate-area.href", stringContainsInOrder("/api/v1/shapes", "/area"))
-                .body("_links.calculate-perimeter.href", stringContainsInOrder("/api/v1/shapes", "/perimeter"));
+                .body("links[0].rel", is("calculate-perimeter"))
+                .body("links[0].href", stringContainsInOrder("/api/v1/shapes", "/perimeter"))
+                .body("links[1].rel", is("calculate-area"))
+                .body("links[1].href", stringContainsInOrder("/api/v1/shapes", "/area"));
     }
 
 
