@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ShapeRequestValidator {
 
-
     public void validate(ShapeRequest shapeRequest) {
         ShapeType type = validateShapeType(shapeRequest.type());
         switch (type) {
