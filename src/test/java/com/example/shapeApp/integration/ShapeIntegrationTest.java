@@ -46,7 +46,7 @@ public class ShapeIntegrationTest {
                 .body(TestUtils.getRequestBodyFromFile("request/post-circle-request.json", CONTEXT))
                 .when().post("/api/v1/shapes")
                 .then()
-                .statusCode(HttpStatus.SC_OK)
+                .statusCode(HttpStatus.SC_CREATED)
                 .and()
                 .body("type", equalTo("CIRCLE"))
                 .body("radius", equalTo(100.0F))
@@ -60,7 +60,7 @@ public class ShapeIntegrationTest {
                 .body(TestUtils.getRequestBodyFromFile("request/post-rectangle-request.json", CONTEXT))
                 .when().post("/api/v1/shapes")
                 .then()
-                .statusCode(HttpStatus.SC_OK)
+                .statusCode(HttpStatus.SC_CREATED)
                 .and()
                 .body("type", equalTo("RECTANGLE"))
                 .body("width", equalTo(100.0F))
@@ -69,6 +69,28 @@ public class ShapeIntegrationTest {
                 .body("area", equalTo(10000.0F));
     }
 
+
+    @Test
+    void should_return_invalid_parameters_exception_message_when_rectangle_has_no_height() throws IOException {
+        given().contentType(JSON)
+                .body(TestUtils.getRequestBodyFromFile("request/post-invalid-params-rectangle-request.json", CONTEXT))
+                .when().post("/api/v1/shapes")
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .and()
+                .body("message", equalTo("INVALID_PARAMETERS"));
+    }
+
+    @Test
+    void should_return_unknown_type_exception_message_when_invalid_shape() throws IOException {
+        given().contentType(JSON)
+                .body(TestUtils.getRequestBodyFromFile("request/post-invalid-shape-request.json", CONTEXT))
+                .when().post("/api/v1/shapes")
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .and()
+                .body("message", equalTo("UNKNOWN_TYPE"));
+    }
 
     @Test
     void should_get_perimeter_when_circle() {

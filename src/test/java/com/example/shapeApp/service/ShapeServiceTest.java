@@ -1,14 +1,13 @@
 package com.example.shapeApp.service;
 
-import com.example.shapeApp.controller.ShapeParametersRequest;
-import com.example.shapeApp.controller.ShapeRequest;
+import com.example.shapeApp.model.ShapeParametersRequest;
+import com.example.shapeApp.model.ShapeRequest;
 import com.example.shapeApp.model.Circle;
 import com.example.shapeApp.model.Rectangle;
 import com.example.shapeApp.repository.ShapeRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.example.shapeApp.model.ShapeType.CIRCLE;
 import static com.example.shapeApp.model.ShapeType.RECTANGLE;
@@ -29,12 +28,12 @@ class ShapeServiceTest {
     @Test
     void should_add_circle_shape() {
         // given
-        var request = new ShapeRequest(CIRCLE, new ShapeParametersRequest(Optional.of(10.0), empty(), empty()));
+        var request = new ShapeRequest("CIRCLE", new ShapeParametersRequest(Optional.of(10.0), empty(), empty()));
         var expectedShape = new Circle(randomUUID(), CIRCLE, 5, 2 * Math.PI * 5, Math.PI * 5 * 5);
         given(shapeRepository.save(any(Circle.class))).willReturn(expectedShape);
 
         // when
-        var response = shapeService.addShape(request);
+        var response = shapeService.addShape(CIRCLE, request.parameters());
 
         // then
         assertThat(response).isEqualTo(expectedShape);
@@ -45,12 +44,12 @@ class ShapeServiceTest {
     @Test
     void should_add_rectangle_shape() {
         // given
-        var request = new ShapeRequest(RECTANGLE, new ShapeParametersRequest(empty(), Optional.of(3.0), Optional.of(4.0)));
+        var request = new ShapeRequest("RECTANGLE", new ShapeParametersRequest(empty(), Optional.of(3.0), Optional.of(4.0)));
         var expectedShape = new Rectangle(randomUUID(), RECTANGLE, 3, 4, 14, 12);
         given(shapeRepository.save(any(Rectangle.class))).willReturn(expectedShape);
 
         // when
-        var response = shapeService.addShape(request);
+        var response = shapeService.addShape(RECTANGLE, request.parameters());
 
         // then
         assertThat(response).isEqualTo(expectedShape);

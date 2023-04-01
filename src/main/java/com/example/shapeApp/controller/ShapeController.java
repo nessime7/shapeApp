@@ -1,10 +1,7 @@
 package com.example.shapeApp.controller;
 
-import com.example.shapeApp.model.AreaResponse;
-import com.example.shapeApp.model.PerimeterResponse;
-import com.example.shapeApp.model.Shape;
+import com.example.shapeApp.model.*;
 import com.example.shapeApp.service.ShapeService;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -50,18 +47,23 @@ calosc pokryc testami jednostkowymi i integracyjnymi.
 public class ShapeController {
 
     private final ShapeService shapeService;
+    private final ShapeRequestValidator requestValidator;
 
     @Autowired
-    public ShapeController(ShapeService shapeService) {
+    public ShapeController(ShapeService shapeService, ShapeRequestValidator validator) {
         this.shapeService = shapeService;
+        this.requestValidator = validator;
     }
 
     @PostMapping("/shapes")
-    public EntityModel<Shape> addShape(@RequestBody ShapeRequest shapeRequest) {
-        final var shape = shapeService.addShape(shapeRequest);
+    public ResponseEntity<EntityModel<Shape>> addShape(@RequestBody ShapeRequest shapeRequest) {
+        requestValidator.validate(shapeRequest);
+        final var type = ShapeType.valueOf(shapeRequest.type());
+        final var shape = shapeService.addShape(type, shapeRequest.parameters());
         final var perimeterLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ShapeController.class).getArea(shape.id())).withRel("calculate-perimeter");
         final var areaLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ShapeController.class).getPerimeter(shape.id())).withRel("calculate-area");
-        return EntityModel.of(shape, perimeterLink, areaLink);
+        return ResponseEntity.status(201)
+                .body(EntityModel.of(shape, perimeterLink, areaLink));
     }
 
     @GetMapping("/shapes/{id}/perimeter")

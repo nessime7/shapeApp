@@ -1,9 +1,10 @@
 package com.example.shapeApp.service;
 
-import com.example.shapeApp.controller.ShapeRequest;
+import com.example.shapeApp.model.ShapeParametersRequest;
 import com.example.shapeApp.model.Circle;
 import com.example.shapeApp.model.Rectangle;
 import com.example.shapeApp.model.Shape;
+import com.example.shapeApp.model.ShapeType;
 import com.example.shapeApp.repository.ShapeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,11 @@ public class ShapeService {
         this.shapeRepository = shapeRepository;
     }
 
-    public Shape addShape(ShapeRequest request) {
+    public Shape addShape(ShapeType type, ShapeParametersRequest parameters) {
         final var id = randomUUID();
-        return switch (request.type()) {
-            case CIRCLE -> createCircle(request.parameters().getRadius().get(), id);
-            case RECTANGLE -> createRectangle(request.parameters().getHeight().get(), request.parameters().getWidth().get(), id);
+        return switch (type) {
+            case CIRCLE -> createCircle(parameters.getRadius().get(), id);
+            case RECTANGLE -> createRectangle(parameters.getHeight().get(), parameters.getWidth().get(), id);
         };
     }
 
