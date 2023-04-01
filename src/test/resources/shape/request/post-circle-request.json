@@ -1,6 +1,6 @@
 {
   "type": "CIRCLE",
-  "parameters":{
-    "radius":100.0
+  "parameters": {
+    "radius": 100.0
   }
 }

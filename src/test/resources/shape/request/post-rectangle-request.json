@@ -1,7 +1,7 @@
 {
   "type": "RECTANGLE",
-  "parameters":{
-    "width":100.0,
-    "height":100.0
+  "parameters": {
+    "width": 100.0,
+    "height": 100.0
   }
 }

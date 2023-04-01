@@ -1,6 +1,6 @@
 {
   "type": "TRIANGLE",
-  "parameters":{
-    "width":100.0
+  "parameters": {
+    "width": 100.0
   }
 }
