@@ -13,6 +13,10 @@ public class ShapeRepository {
     private final Map<UUID, Shape> shapes = new HashMap<>();
 
     public Shape getById(UUID id) {
+        final var shape = shapes.get(id);
+        if (shape == null) {
+            throw new IllegalStateException("Shape not found");
+        }
         return shapes.get(id);
     }
 
