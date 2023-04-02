@@ -28,13 +28,14 @@ public class ShapeRequestValidator {
     }
 
     private void validateRectangleParams(ShapeRequest shapeRequest) {
-        if (shapeRequest.parameters().getHeight().isEmpty() || shapeRequest.parameters().getWidth().isEmpty()) {
+        if (shapeRequest.parameters().getHeight().filter(h -> h > 0).isEmpty() ||
+                shapeRequest.parameters().getWidth().filter(w -> w > 0).isEmpty()) {
             throw new InvalidParametersException();
         }
     }
 
     private void validateCircleParams(ShapeRequest shapeRequest) {
-        if (shapeRequest.parameters().getRadius().isEmpty()) {
+        if (shapeRequest.parameters().getRadius().filter(r -> r > 0).isEmpty()) {
             throw new InvalidParametersException();
         }
     }
