@@ -1,6 +1,9 @@
 package com.example.shapes.service;
 
-import com.example.shapes.model.*;
+import com.example.shapes.model.Circle;
+import com.example.shapes.model.Rectangle;
+import com.example.shapes.model.Shape;
+import com.example.shapes.model.ShapeType;
 import com.example.shapes.model.dto.ShapeParametersRequest;
 import com.example.shapes.repository.ShapeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +61,7 @@ public class ShapeService {
     public Page<Shape> getShapesByType(ShapeType type, Pageable pageable) {
         return switch (type) {
             case CIRCLE -> shapeRepository.findCircles(pageable).map(circle -> (Shape) circle);
-            case RECTANGLE -> shapeRepository.findRectangles(pageable).map(r -> (Shape) r);
+            case RECTANGLE -> shapeRepository.findRectangles(pageable).map(rectangle -> (Shape) rectangle);
         };
     }
 
