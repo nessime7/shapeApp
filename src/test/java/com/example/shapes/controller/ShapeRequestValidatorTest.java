@@ -44,6 +44,16 @@ class ShapeRequestValidatorTest {
     }
 
     @Test
+    void should_throw_when_minus_radius_in_circle_request() {
+        // given
+        var request = new ShapeRequest("CIRCLE", new ShapeParametersRequest(Optional.of((-10.0)), empty(), empty()));
+
+        // then
+        assertThrows(InvalidParametersException.class, () -> validator.validate(request));
+    }
+
+
+    @Test
     void should_throw_when_no_height_in_rectangle_request() {
         // given
         var request = new ShapeRequest("RECTANGLE", new ShapeParametersRequest(empty(), Optional.of(10.0), empty()));
@@ -53,9 +63,28 @@ class ShapeRequestValidatorTest {
     }
 
     @Test
+    void should_throw_when_minus_height_in_rectangle_request() {
+        // given
+        var request = new ShapeRequest("RECTANGLE", new ShapeParametersRequest(empty(), Optional.of(10.0), Optional.of((-10.0))));
+
+        // then
+        assertThrows(InvalidParametersException.class, () -> validator.validate(request));
+    }
+
+
+    @Test
     void should_throw_when_no_height_and_width_in_rectangle_request() {
         // given
         var request = new ShapeRequest("RECTANGLE", new ShapeParametersRequest(empty(), empty(), empty()));
+
+        // then
+        assertThrows(InvalidParametersException.class, () -> validator.validate(request));
+    }
+
+    @Test
+    void should_throw_when_minus_width_in_rectangle_request() {
+        // given
+        var request = new ShapeRequest("RECTANGLE", new ShapeParametersRequest(empty(), Optional.of(-10.0), Optional.of((10.0))));
 
         // then
         assertThrows(InvalidParametersException.class, () -> validator.validate(request));

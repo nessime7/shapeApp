@@ -32,7 +32,7 @@ class ShapeServiceTest {
     @Test
     void should_add_circle_shape() {
         // given
-        var request = new ShapeRequest("CIRCLE", new ShapeParametersRequest(Optional.of(10.0), empty(), empty()));
+        var request = new ShapeRequest("CIRCLE", new ShapeParametersRequest(Optional.of(5.0), empty(), empty()));
         var expectedShape = new Circle(randomUUID(), 5, 2 * Math.PI * 5, Math.PI * 5 * 5);
         given(shapeRepository.save(any(Circle.class))).willReturn(expectedShape);
 
