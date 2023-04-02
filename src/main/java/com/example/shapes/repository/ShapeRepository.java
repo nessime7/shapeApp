@@ -1,6 +1,7 @@
 package com.example.shapes.repository;
 
 import com.example.shapes.model.Circle;
+import com.example.shapes.model.Rectangle;
 import com.example.shapes.model.Shape;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,7 @@ public interface ShapeRepository extends JpaRepository<Shape, UUID> {
     Page<Circle> findCircles(Pageable pageable);
 
     @Query("from Rectangle")
-    Page<Circle> findRectangles(Pageable pageable);
+    Page<Rectangle> findRectangles(Pageable pageable);
 
 }
 
